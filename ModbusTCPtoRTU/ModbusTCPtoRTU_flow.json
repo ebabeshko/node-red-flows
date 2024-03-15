@@ -1,0 +1,130 @@
+[
+    {
+        "id": "ac097eb2.4ebeb8",
+        "type": "tab",
+        "label": "Flow MbTCPtoRTU",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "11eb3070.54ad7",
+        "type": "function",
+        "z": "ac097eb2.4ebeb8",
+        "name": "Convert TCP to RTU",
+        "func": "var MBAPHeader = [5];\nvar crc = 0xFFFF;\n\nMBAPHeader[0]= msg.payload[0];\nMBAPHeader[1]= msg.payload[1];\nMBAPHeader[2]= msg.payload[2];\nMBAPHeader[3]= msg.payload[3];\nMBAPHeader[4]= msg.payload[4];\nflow.set('MBAP_HEADER', MBAPHeader);\n\nvar ReqLen = msg.payload[5];\nvar MBLen = (msg.payload.length)-ReqLen;\nvar MBReq = [MBLen];\n\nfor (let x=0; x < MBLen;x++){\n  MBReq[x] = msg.payload[x+ReqLen];\n}\n\nfor (var req = 0; req < ReqLen; req++) {\n  crc ^= MBReq[req];          // XOR byte into least sig. byte of crc\n  \n  for (var i = 8; i !== 0; i--) {    // Loop over each bit\n    if ((crc & 0x0001) !== 0) {      // If the LSB is set\n        crc >>= 1;                   // Shift right and XOR 0xA001\n        crc ^= 0xA001;\n    } else {                          // Else LSB is not set\n      crc >>= 1;                     // Just shift right\n    }\n  }\n}\n\nvar MyCRC = crc.toString(16);\nMBReq[MBLen+1] = parseInt(MyCRC.substring(0,2),16);\nMBReq[MBLen] = parseInt(MyCRC.substring(2,4),16);\n\nvar buf = Buffer.from(MBReq);\nmsg.payload = buf;\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 100,
+        "wires": [
+            [
+                "7e62bbbc.bd8ea4"
+            ]
+        ],
+        "outputLabels": [
+            "XO"
+        ]
+    },
+    {
+        "id": "db79ee80.1d792",
+        "type": "function",
+        "z": "ac097eb2.4ebeb8",
+        "name": "Convert RTU to TCP",
+        "func": "if (msg.payload.length > 0) {\n  var resLen = msg.payload.length - 2;\n  var respond = [];\n  respond[0] = flow.get('MBAP_HEADER')[0];\n  respond[1] = flow.get('MBAP_HEADER')[1];\n  respond[2] = flow.get('MBAP_HEADER')[2];\n  respond[3] = flow.get('MBAP_HEADER')[3];\n  respond[4] = flow.get('MBAP_HEADER')[4];\n  respond[5] = resLen;\n\n  for (let req = 6; req < resLen+6; req++) {\n    respond[req]= msg.payload[req-6];\n  }\n  msg.payload = Buffer.from(respond);\n  return msg;\n} else {\n   return null;\n}\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 100,
+        "wires": [
+            [
+                "2622a1e893f52bed"
+            ]
+        ]
+    },
+    {
+        "id": "55423964225fa869",
+        "type": "comment",
+        "z": "ac097eb2.4ebeb8",
+        "name": "Convert Modbus TCP to Modbus RTU",
+        "info": "",
+        "x": 170,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "cbd6e86861af643d",
+        "type": "tcp in",
+        "z": "ac097eb2.4ebeb8",
+        "name": "Modbus TCP - IN",
+        "server": "server",
+        "host": "",
+        "port": "502",
+        "datamode": "stream",
+        "datatype": "buffer",
+        "newline": "",
+        "topic": "",
+        "base64": false,
+        "x": 100,
+        "y": 100,
+        "wires": [
+            [
+                "11eb3070.54ad7"
+            ]
+        ]
+    },
+    {
+        "id": "2622a1e893f52bed",
+        "type": "tcp out",
+        "z": "ac097eb2.4ebeb8",
+        "name": "Modbus TCP - OUT",
+        "host": "127.0.0.1",
+        "port": "502",
+        "beserver": "reply",
+        "base64": false,
+        "end": false,
+        "x": 850,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "7e62bbbc.bd8ea4",
+        "type": "serial request",
+        "z": "ac097eb2.4ebeb8",
+        "name": "",
+        "serial": "1c326b00.95f945",
+        "x": 470,
+        "y": 100,
+        "wires": [
+            [
+                "db79ee80.1d792"
+            ]
+        ]
+    },
+    {
+        "id": "1c326b00.95f945",
+        "type": "serial-port",
+        "serialport": "COM2",
+        "serialbaud": "9600",
+        "databits": "8",
+        "parity": "none",
+        "stopbits": "1",
+        "waitfor": "",
+        "dtr": "none",
+        "rts": "none",
+        "cts": "none",
+        "dsr": "none",
+        "newline": "1000",
+        "bin": "bin",
+        "out": "time",
+        "addchar": "",
+        "responsetimeout": "1000"
+    }
+]
