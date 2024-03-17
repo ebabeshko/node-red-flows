@@ -1,0 +1,108 @@
+[
+    {
+        "id": "0d73195fc33e7cc9",
+        "type": "tab",
+        "label": "Inject Every Hour",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "f9ae9db07f4dfd54",
+        "type": "delay",
+        "z": "0d73195fc33e7cc9",
+        "name": "Delay",
+        "pauseType": "delayv",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 390,
+        "y": 60,
+        "wires": [
+            [
+                "a083608e362f022c"
+            ]
+        ]
+    },
+    {
+        "id": "923568cc38a2f810",
+        "type": "change",
+        "z": "0d73195fc33e7cc9",
+        "name": "Calc",
+        "rules": [
+            {
+                "t": "set",
+                "p": "delay",
+                "pt": "msg",
+                "to": "(\t    $time := ($now('[H]:[m]:[s]')~>$split(':')).$number();\t    1000*(60*(60-$time[1]) - $time[2])\t)\t",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 270,
+        "y": 60,
+        "wires": [
+            [
+                "f9ae9db07f4dfd54"
+            ]
+        ]
+    },
+    {
+        "id": "de9f66ba0e3cb4e5",
+        "type": "inject",
+        "z": "0d73195fc33e7cc9",
+        "name": "Hourly",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "3600",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 60,
+        "wires": [
+            [
+                "923568cc38a2f810"
+            ]
+        ]
+    },
+    {
+        "id": "a083608e362f022c",
+        "type": "debug",
+        "z": "0d73195fc33e7cc9",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 530,
+        "y": 60,
+        "wires": []
+    }
+]
