@@ -1,0 +1,72 @@
+[
+    {
+        "id": "857a2f1db0498fe7",
+        "type": "tab",
+        "label": "Inject Every 15 Minutes",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "7142c3bc4e6ff31a",
+        "type": "inject",
+        "z": "857a2f1db0498fe7",
+        "name": "Every Minute",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "60",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 60,
+        "wires": [
+            [
+                "89f8aee36a9957b9"
+            ]
+        ]
+    },
+    {
+        "id": "89f8aee36a9957b9",
+        "type": "function",
+        "z": "857a2f1db0498fe7",
+        "name": "Every 15 Minutes",
+        "func": "const d = new Date();\nlet minutes = d.getMinutes();\n\nswitch (minutes) {\n    case 0:\n    case 15: \n    case 30:\n    case 45:\n        return msg;\n    default:\n        return null;\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 60,
+        "wires": [
+            [
+                "9152e6fcfdce50bd"
+            ]
+        ]
+    },
+    {
+        "id": "9152e6fcfdce50bd",
+        "type": "debug",
+        "z": "857a2f1db0498fe7",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 550,
+        "y": 60,
+        "wires": []
+    }
+]
