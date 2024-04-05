@@ -1,0 +1,188 @@
+[
+    {
+        "id": "86577ecec12acc09",
+        "type": "tab",
+        "label": "Read Inconsequent Modbus Demo",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "e7a539fee9d7c16d",
+        "type": "inject",
+        "z": "86577ecec12acc09",
+        "name": "Start",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "str",
+        "x": 100,
+        "y": 100,
+        "wires": [
+            [
+                "797049ad850167b3"
+            ]
+        ]
+    },
+    {
+        "id": "797049ad850167b3",
+        "type": "modbus-flex-sequencer",
+        "z": "86577ecec12acc09",
+        "name": "880 and 1029",
+        "sequences": [
+            {
+                "name": "",
+                "unitid": "1",
+                "fc": "FC3",
+                "address": "880",
+                "quantity": "1"
+            },
+            {
+                "name": "",
+                "unitid": "1",
+                "fc": "FC3",
+                "address": "1029",
+                "quantity": "1"
+            }
+        ],
+        "server": "f3a4502817d06bd6",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 260,
+        "y": 100,
+        "wires": [
+            [
+                "0ed2048a108c61c2"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "31de323de7f2514d",
+        "type": "join",
+        "z": "86577ecec12acc09",
+        "name": "Join",
+        "mode": "custom",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 550,
+        "y": 100,
+        "wires": [
+            [
+                "4a0e449094e29340"
+            ]
+        ]
+    },
+    {
+        "id": "4a0e449094e29340",
+        "type": "debug",
+        "z": "86577ecec12acc09",
+        "name": "Debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 690,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "0ed2048a108c61c2",
+        "type": "change",
+        "z": "86577ecec12acc09",
+        "name": "Extract",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload[0]",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 420,
+        "y": 100,
+        "wires": [
+            [
+                "31de323de7f2514d"
+            ]
+        ]
+    },
+    {
+        "id": "b783d796337abe7e",
+        "type": "comment",
+        "z": "86577ecec12acc09",
+        "name": "Read inconsequent Modbus registers (880 and 1029 in this example), create an array of values",
+        "info": "",
+        "x": 360,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "f3a4502817d06bd6",
+        "type": "modbus-client",
+        "name": "Local Test Modbus TCP Server",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "127.0.0.1",
+        "tcpPort": "502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": 1,
+        "commandDelay": 1,
+        "clientTimeout": 1000,
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": 2000,
+        "parallelUnitIdsAllowed": true,
+        "showWarnings": true,
+        "showLogs": true
+    }
+]
